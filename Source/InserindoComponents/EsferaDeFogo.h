@@ -24,6 +24,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Componentes")
 		class USphereComponent* EsferaDeColisao;
 
+	// Ponteiro para um componente de sistema de particula
+	UPROPERTY(EditAnywhere, Category = "Componentes")
+		UParticleSystemComponent* ParticulaDeFogo;
 
 protected:
 	// Called when the game starts or when spawned

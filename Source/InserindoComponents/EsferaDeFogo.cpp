@@ -4,6 +4,8 @@
 #include "EsferaDeFogo.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Particles/ParticleSystemComponent.h"
 
 
 // Sets default values
@@ -24,6 +26,31 @@ AEsferaDeFogo::AEsferaDeFogo()
 
 	// Cria uma static mesh component e coloca o endereço de memoria deste recurso no ponteiro EsferaVisivel
 	EsferaVisivel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Esfera"));
+
+	// Cria um compoente de particula e coloca endereço de memória no ponteiro
+	ParticulaDeFogo = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particula Fogo"));
+	ParticulaDeFogo->SetupAttachment(EsferaVisivel); // Coloca este compoente como filho de EsferaVisivel
+	ParticulaDeFogo->bAutoActivate = true; // Ativa a particula quando iniciado o jogo
+
+	// Atribui Shape_Sphere ao UStaticMesh de EsferaVisivel
+	ConstructorHelpers::FObjectFinder<UStaticMesh>
+		Esfera(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+	
+	// Atribui o material M_Metal_Gold a esfera
+	ConstructorHelpers::FObjectFinder<UMaterialInterface>
+		MaterialEsfera(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
+
+	// Atribui a particula P_Fire ao sistema de particula da esfera
+	ConstructorHelpers::FObjectFinder<UParticleSystem>
+		Fogo(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Fire.P_Fire'"));
+
+	// Se todos os recursos forem encontrados então segue
+    if(Esfera.Succeeded() && MaterialEsfera.Succeeded() && Fogo.Succeeded()) {
+		EsferaVisivel->SetStaticMesh(Esfera.Object); // Seta que o staticMesh de Esfera Visivel será Esfera.Object
+		EsferaVisivel->SetMaterial(0, MaterialEsfera.Object); // Seta que o material de Esfera Visível será MaterialEsfera.Object
+		ParticulaDeFogo->SetTemplate(Fogo.Object); // Seta que o sistema de particula de Esfera Visível será Fogo.Object
+		EsferaVisivel->SetRelativeLocation(FVector(0.f, 0.f, -60.f)); // Seta que a EsferaVisivel tera a localização x=0, y=0, z=-60
+	}
 
 	// Anexa este componente como sendo filho do componente raiz (neste caso será EsferaDeColisao)
 	EsferaVisivel->SetupAttachment(RootComponent);
