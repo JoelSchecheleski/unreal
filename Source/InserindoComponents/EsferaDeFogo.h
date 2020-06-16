@@ -77,6 +77,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variaveis")
 		FString VariavelEditAnywhereBlueprintReadOnly = "Outro Texto";
 
+	// Macro UFUNCTION define funções e pode receber parâmetros
+	UFUNCTION()
+		void IniciouSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION()
+		void TerminouSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+
+	// forward declaration
+	// Precisamos de class para indicar que apesar da classe não esta ainda presente ela será posteriormente anexada ao projeto.
+	UPROPERTY(EditAnywhere, Category = "Texto");
+	class UTextRenderComponent* TextoDeExibicao;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/TextRenderComponent.h"
 
 
 // Sets default values
@@ -31,6 +32,26 @@ AEsferaDeFogo::AEsferaDeFogo()
 	ParticulaDeFogo = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particula Fogo"));
 	ParticulaDeFogo->SetupAttachment(EsferaVisivel); // Coloca este compoente como filho de EsferaVisivel
 	ParticulaDeFogo->bAutoActivate = true; // Ativa a particula quando iniciado o jogo
+
+	// Cria o componente de texto de exibição
+	TextoDeExibicao = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Texto"));
+	TextoDeExibicao->SetupAttachment(EsferaVisivel); // Anexa o componente de texto em esfera visivel como filho
+	TextoDeExibicao->SetRelativeLocation(FVector(0.f, 0.f, 110.f)); // Define a posição em relação a posição do elemento PAI
+	TextoDeExibicao->SetHorizontalAlignment(EHTA_Center); // Define que será centralizado
+	TextoDeExibicao->SetYScale(1.f); // Define a escala em 1.f no eixo Y
+	TextoDeExibicao->SetXScale(1.f); // Define a escala em 1.f no eixo X
+	TextoDeExibicao->SetText(FText::FromString("C++ na Unreal Udemy")); // Define o texto convertendo de String para FText
+	TextoDeExibicao->SetTextRenderColor(FColor::Red); // Define a cor do texto
+	TextoDeExibicao->SetVisibility(true); // Inicia de forma visível
+
+	// Quando o evento de overlap ocorrer a função OnActorDeginOverlp é acionada 
+	// AddDynamic está anexando a função IniciouSobreposicao para que esta função também seja executada após ocorrer o evento de Overpad
+	// e que chama a fun~ção OnActorBeginOverlap, chamado de DELEGATE.
+	// Dentro de OnActorBeginOverlap vai ocorrer uma chamada de todas as funções vinculadas(AddDynamic) a ela. Isso é feito via função Brodcast.
+	OnActorBeginOverlap.AddDynamic(this, &AEsferaDeFogo::IniciouSobreposicao);
+
+	// Também está anexada, vinculando a função TerminouSobreposicao.
+	OnActorEndOverlap.AddDynamic(this, &AEsferaDeFogo::TerminouSobreposicao);
 
 	// Atribui Shape_Sphere ao UStaticMesh de EsferaVisivel
 	ConstructorHelpers::FObjectFinder<UStaticMesh>
@@ -70,3 +91,12 @@ void AEsferaDeFogo::Tick(float DeltaTime)
 
 }
 
+void AEsferaDeFogo::IniciouSobreposicao(AActor* OverlappedActor, AActor* OtherActor) {
+	FString StringDeSaida;
+	StringDeSaida = "Sobrepondo " + OtherActor->GetName() + " !";
+	TextoDeExibicao->SetText(FText::FromString(StringDeSaida));
+}
+
+void AEsferaDeFogo::TerminouSobreposicao(AActor* OverlappedActor, AActor* OtherActor) {
+	TextoDeExibicao->SetText(FText::FromString(TEXT("Deixei de sobrepor")));
+}
