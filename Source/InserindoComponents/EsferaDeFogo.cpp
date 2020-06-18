@@ -91,12 +91,14 @@ void AEsferaDeFogo::Tick(float DeltaTime)
 
 }
 
-void AEsferaDeFogo::IniciouSobreposicao(AActor* OverlappedActor, AActor* OtherActor) {
+// Essa funcao será chamada caso alguma blueprint criada a partir dessa classe (parent) não sobrescreva essa função
+void AEsferaDeFogo::IniciouSobreposicao_Implementation(AActor* OverlappedActor, AActor* OtherActor) {
 	FString StringDeSaida;
-	StringDeSaida = "Sobrepondo " + OtherActor->GetName() + " !";
+	StringDeSaida = "Sobrepondo via codigo C++ o ator" + OtherActor->GetName() + " !";
 	TextoDeExibicao->SetText(FText::FromString(StringDeSaida));
 }
 
-void AEsferaDeFogo::TerminouSobreposicao(AActor* OverlappedActor, AActor* OtherActor) {
-	TextoDeExibicao->SetText(FText::FromString(TEXT("Deixei de sobrepor")));
+// Essa funcao será chamada caso alguma blueprint criada a partir dessa classe (parent) não sobrescreva essa função
+void AEsferaDeFogo::TerminouSobreposicao_Implementation(AActor* OverlappedActor, AActor* OtherActor) {
+	TextoDeExibicao->SetText(FText::FromString(TEXT("Deixei de sobrepor via código C++")));
 }

@@ -77,16 +77,39 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variaveis")
 		FString VariavelEditAnywhereBlueprintReadOnly = "Outro Texto";
 
-	// Macro UFUNCTION define funções e pode receber parâmetros
-	UFUNCTION()
-		void IniciouSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+	/*
+	 Macro UFUNCTION define funções e pode receber parâmetros, informa a Unreal Engine que sua função declarada estará
+	 disponível para um uso mais amplo dentro do editor Blueprint Scripting.
+	 Pode-se incluir especificadores como parÂmetros para UFUNCTION() para determinar nível de acesso que você está
+	 disposto a dar na sua função.
+	 1. BluprintCallable:
+			|__ A funcao pode ser executada em uma Blueprint. Isso permite que a função seja chamada em scripts de Blueprints.
+	 2. BlueprintImplementableEvent:
+			|__ Indica que a funcao pode ser substituida em uma Blueprint, nesse caso, a Blueprint impplementa a logica dessa funcao em vez do codigo C++. Pode ser combinado com BlueprintCalleble para que ee possa ser chamado na Blueprint, caso contrario, apenas C++ pode chamar essa funcao. Se não houver implementação da função na blueprint(ou sej, se a blueprint não substituir a função), a chamada de função no codigo C++ seja ignorado.
+	 3. BlueprintNativeEvent
+			|__ Quase a mesma coisa que BlueprintImplementableEvent, porém, se não houver implementação da função na Blueprint(ou seja se a blueprint não substituir a funcao), você pode especificar uma funcao C++ que sera chamada caso nenhuma substituicao tiver sdo definida na bluprint. Para cada BlueprintNativeEvent que voce defini, voce deve incluir uma versao de implementacao no C++ como o seguinte formato [NomeFuncao]_Implementation(mesma lista de parametros).
+	 4. BlueprintPure
+			|__
+	
+	*/
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
+		void IniciouSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+		// Essa função será chamado caso a blueprint não sobrescreva essa função.
+		void IniciouSobreposicao_Implementation(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION(BlueprintNativeEvent)
 		void TerminouSobreposicao(AActor* OverlappedActor, AActor* OtherActor);
+		// Essa função será chamado caso a blueprint não sobrescreva essa função.	
+		void TerminouSobreposicao_Implementation(AActor* OverlappedActor, AActor* OtherActor);
+
+	// Deve ser implementado na bluprint
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Sobreposicoes")
+		void ImplementePraMimBlueprint();
 
 	// forward declaration
 	// Precisamos de class para indicar que apesar da classe não esta ainda presente ela será posteriormente anexada ao projeto.
-	UPROPERTY(EditAnywhere, Category = "Texto");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Texto");
 	class UTextRenderComponent* TextoDeExibicao;
 
 	// Called when the game starts or when spawned
